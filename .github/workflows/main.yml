@@ -1,10 +1,10 @@
-name: Build NERTZ (Windows 32-bit and 64-bit)
+name: Build Nertz (Windows x64)
 
 on:
-  push:
-    branches: [main, master]
-    tags: ['v*']
   workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ["v*"]
 
 permissions:
   contents: write
@@ -14,48 +14,20 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
-      # Works with loose files OR an uploaded .zip: unzips any zip in the repo, then finds package.json.
-      - name: Locate app folder (unzip if needed)
-        shell: pwsh
-        run: |
-          function Find-Pkg { Get-ChildItem -Path . -Recurse -Filter package.json -File | Where-Object { $_.FullName -notmatch 'node_modules' } | Select-Object -First 1 }
-          $pkg = Find-Pkg
-          if (-not $pkg) {
-            $zips = Get-ChildItem -Path . -Recurse -Filter *.zip -File | Where-Object { $_.FullName -notmatch 'node_modules' }
-            foreach ($z in $zips) { Write-Host "Unzipping $($z.Name)"; Expand-Archive -Path $z.FullName -DestinationPath (Join-Path $PWD '_src') -Force }
-            $pkg = Find-Pkg
-          }
-          if (-not $pkg) { Write-Error "No package.json and no usable zip found. Upload NERTZ-source.zip to the repository."; exit 1 }
-          $dir = $pkg.DirectoryName -replace '\\','/'
-          Write-Host "App folder: $dir"
-          "APP_DIR=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install dependencies
-        working-directory: ${{ env.APP_DIR }}
-        run: npm install
-
-      - name: Build Windows installer (one setup for 32-bit and 64-bit)
-        working-directory: ${{ env.APP_DIR }}
-        run: npm run dist
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: false
-
-      - name: Upload installer
-        uses: actions/upload-artifact@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          name: NERTZ-windows
-          path: ${{ env.APP_DIR }}/dist/NERTZ-Setup-*.exe
-          if-no-files-found: error
-
-      - name: Publish GitHub release (tags only)
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+          targets: x86_64-pc-windows-msvc
+      - uses: swatinem/rust-cache@v2
         with:
-          files: ${{ env.APP_DIR }}/dist/NERTZ-Setup-*.exe
-
-          
+          workspaces: src-tauri
+      - run: npm install
+      - run: npm run tauri -- build --target x86_64-pc-windows-msvc
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nertz-Windows-x64
+          path: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            src-tauri/target/x86_64-pc-windows-msvc/release/nertz.exe
