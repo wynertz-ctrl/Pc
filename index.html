@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>NERTZ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"></head><body>
+
+<canvas id="c"></canvas>
+<div id="logo"><svg viewBox="0 0 64 64" aria-label="Nertz orb logo"><defs><radialGradient id="g"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#9fe6ff"/><stop offset="1" stop-color="#0a2a6a" stop-opacity="0"/></radialGradient></defs><g fill="none" stroke="#5fd4ff" stroke-linecap="round"><circle cx="32" cy="32" r="29" stroke-width="1.6" stroke-dasharray="30 8 12 8"/><circle cx="32" cy="32" r="23" stroke-width="3" stroke-dasharray="40 10 18 10" opacity=".8"/><circle cx="32" cy="32" r="17" stroke-width="1.2"/><circle cx="32" cy="32" r="12" stroke-width="2.5" stroke-dasharray="14 6" opacity=".7"/></g><circle cx="32" cy="32" r="10" fill="url(#g)"/></svg><div>NERTZ<span id="lab"></span></div></div>
+<button id="pw" aria-label="Power on Nertz"></button><div id="pwt">CLICK TO POWER ON</div>
+<div id="msg"></div>
+<div id="dock" hidden><button id="bm" title="Listen (Space)" aria-label="Listen">◉</button><button id="bt" title="Transform (T)" aria-label="Transform">⟲</button><button id="br" title="Review image (R)" aria-label="Review">▣</button><button id="bs" title="Settings (S)" aria-label="Settings">⚙</button></div>
+<div id="set" role="dialog" aria-label="Settings"><button id="x" aria-label="Close">✕</button></div>
+<div id="rv"><div id="stage"><div id="wrap"><img id="im" alt="Selected for review"><i id="mk"></i></div></div><aside id="info"></aside><button id="back">Return to Nertz</button></div>
+<input type="file" id="fi" accept="image/*" hidden>
+<script type="module" src="/src/main.js"></script>
+</body></html>
